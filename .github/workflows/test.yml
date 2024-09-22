@@ -16,12 +16,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: cachix/install-nix-action@v26
-
+      
       # Set up Python 3.11
       - name: Set up Python 3.11
         uses: actions/setup-python@v2
         with:
           python-version: '3.11'
+
+      # Install dependencies (numpy, pandas, etc.)
+      - name: Install Python dependencies
+        run: |
+          python -m venv .venv
+          source .venv/bin/activate
+          pip install --upgrade pip
+          pip install -r requirements.txt  # Ensure you have numpy and pandas in your requirements.txt file
 
       - uses: cachix/cachix-action@v14
         with:
