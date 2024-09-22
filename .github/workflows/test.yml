@@ -41,10 +41,22 @@ jobs:
       - name: Install Dependencies
         run: poetry install --no-interaction --no-ansi
 
+      # Incorporate devenv steps
+      - uses: cachix/install-nix-action@v26
+      - uses: cachix/cachix-action@v14
+        with:
+          name: devenv
+      - name: Install devenv.sh
+        run: nix profile install nixpkgs#devenv
+
+      # Run devenv tests
+      - name: Build the devenv shell and run any pre-commit hooks
+        run: devenv test
+
       # Ensure test.sh can be executed - Using absolute path
       - name: Make test.sh Executable
-        run: chmod +x $GITHUB_WORKSPACE/.test.sh
+        run: chmod +x $GITHUB_WORKSPACE/test.sh
 
       # Run the test.sh script using absolute path
       - name: Run Tests
-        run: poetry run $GITHUB_WORKSPACE/.test.sh
+        run: poetry run $GITHUB_WORKSPACE/test.sh
