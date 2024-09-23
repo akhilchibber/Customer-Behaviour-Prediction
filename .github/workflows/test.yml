@@ -41,6 +41,14 @@ jobs:
       - name: Install Dependencies
         run: poetry install --no-interaction --no-ansi
 
+      # Ensure pre-commit is installed
+      - name: Install pre-commit
+        run: poetry run pip install pre-commit
+
+      # Run pre-commit hooks on all files
+      - name: Run Pre-commit Linting
+        run: poetry run pre-commit run --all-files
+
       # Ensure test.sh can be executed - Using absolute path
       - name: Make test.sh Executable
         run: chmod +x $GITHUB_WORKSPACE/.test.sh
