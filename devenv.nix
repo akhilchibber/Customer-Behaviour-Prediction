@@ -53,7 +53,7 @@
         activate.enable = true;
         install.enable = true;
         install.allExtras = true;
-        # install.groups = [ "dev" ];
+        install.groups = [ "dev" ];
       };
 
     };
