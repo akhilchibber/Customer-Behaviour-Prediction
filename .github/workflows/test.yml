@@ -16,40 +16,35 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: cachix/install-nix-action@v26
+      # Set up Python 3.12.5
+      - name: Set up Python 3.12.5
+        uses: actions/setup-python@v4
         with:
-          # Ensure Nix is installed in multi-user mode
-          nix_path: nixpkgs=channel:nixpkgs-unstable
-          install_url: https://nixos.org/nix/install
+          python-version: 3.12.5
 
-      - uses: cachix/cachix-action@v14
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Cache Poetry dependencies
+        uses: actions/cache@v3
         with:
-          name: devenv
+          path: ~/.cache/pypoetry
+          key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-poetry-
 
-      # Diagnostic Steps
-      - name: List Installed Packages
-        run: poetry run pip list
+      - name: Update Poetry Lock File
+        run: poetry lock --no-update
 
-      - name: Print sys.path
-        run: poetry run python -c "import sys; print(sys.path)"
+      - name: Install Dependencies
+        run: poetry install --no-interaction --no-ansi
 
-      - name: Print Current Working Directory
-        run: pwd
+      # Ensure test.sh can be executed - Using absolute path
+      - name: Make test.sh Executable
+        run: chmod +x $GITHUB_WORKSPACE/.test.sh
 
-      - name: List Directory Contents
-        run: ls -la
-
-      - name: Find numpy in Site-Packages
-        run: find $(python -c "import site; print(site.getsitepackages()[0])") -name "numpy*"
-
-      - name: Print numpy Location
-        run: poetry run python -c "import numpy; print(numpy.__file__)"
-
+      # Run the test.sh script using absolute path
       - name: Run Tests
-        run: poetry run pytest
-
-      - name: Install devenv
-        run: nix profile install nixpkgs#devenv
-
-      - name: Build the devenv shell and run any pre-commit hooks
-        run: devenv test
+        run: poetry run $GITHUB_WORKSPACE/.test.sh
