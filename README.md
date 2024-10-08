@@ -1,4 +1,7 @@
 # Customer Behavior Analysis Challenge
+<p align="center">
+  <img src="https://github.com/akhilchibber/Customer-Behaviour-Prediction/blob/main/Online-Shop.png?raw=true" alt="Online Shopping">
+</p>
 
 :wave: Welcome to an exciting challenge!
 
